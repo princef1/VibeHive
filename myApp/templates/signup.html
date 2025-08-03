@@ -1,0 +1,124 @@
+{% load static %}
+{% load form_extras %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign up</title>
+    <link rel="icon" href="{% static 'images/Vibe.png' %}" type="image/png">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+</head>
+
+<body class="signup">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <img src="{% static 'images/Vibe.png' %}" alt="VibeHive Logo">
+        <a href="{% url 'login' %}">Login</a>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="page-container">
+        <form method="post">
+            <h2>Create an account</h2>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <ul class="errorlist">{{ form.non_field_errors }}</ul>
+            {% endif %}
+
+            <div class="name-row">
+                <div class="form-group">
+                    {{ form.first_name|add_placeholder:"First Name" }}
+                    {% for error in form.first_name.errors %}
+                    <div class="errorlist">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.last_name|add_placeholder:"Last Name" }}
+                    {% for error in form.last_name.errors %}
+                    <div class="errorlist">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="birthdate-boxes">
+                    {{ form.birth_date }}
+                </div>
+                {% for error in form.birth_date.errors %}
+                <div class="errorlist">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+
+            <div class="form-group">
+                {{ form.email|add_placeholder:"Email" }}
+                {% for error in form.email.errors %}
+                <div class="errorlist">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.user_name|add_placeholder:"Username" }}
+                {% for error in form.user_name.errors %}
+                <div class="errorlist">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group password-container">
+                {{ form.password1|add_placeholder:"Password" }}
+                <i class="fa-solid fa-eye toggle-password" onclick="togglePassword(this)"></i>
+                {% for error in form.password1.errors %}
+                <div class="errorlist">{{ error }}</div>
+                {% endfor %}
+                <div class="password-tooltip">
+                    <strong>Password requirements:</strong>
+                    <ul style="padding-left: 16px; margin: 6px 0 0 0;">
+                        <li>At least 8 characters</li>
+                        <li>Contains both uppercase and lowercase letters</li>
+                        <li>Includes numbers or symbols</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="form-group password-container">
+                {{ form.password2|add_placeholder:"Confirm Password" }}
+                <i class="fa-solid fa-eye toggle-password" onclick="togglePassword(this)"></i>
+                {% for error in form.password2.errors %}
+                <div class="errorlist">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <button type="submit">Sign up</button>
+            <hr class="bottom-line">
+            <p class="account">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="info">
+            <div class="store">
+                <p>Get the App</p>
+                <img src="{% static 'images/app_store.png' %}" alt="storelogo">
+                <img src="{% static 'images/play_store.png' %}" alt="storelogo">
+            </div>
+            <p>Contact us: <a href="mailto:support@vibehive.com">support@vibehive.com</a></p>
+        </div>
+        <p>&copy; {{ current_year|default:2025 }} VibeHive. All rights reserved.</p>
+    </footer>
+
+    <script src="{% static 'js/base.js' %}"></script>
+
+</body>
+
+</html>
