@@ -1,6 +1,6 @@
 from datetime import date
 from django import forms,template
-from .models import CustomUser
+from .models import CustomUser, Location, Tag, UserProfile
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 class CustomUserCreationForm(UserCreationForm):
@@ -39,6 +39,22 @@ class CustomAuthenticationForm(AuthenticationForm):
     class Meta:
         model = CustomUser
         fields = ['username', 'password']
+
+
+class UserSetupProfile(forms.ModelForm):
+    tags =  forms.ModelMultipleChoiceField(
+        queryset = Tag.objects.all(),
+        widget = forms.CheckboxSelectMultiple, required = False
+        )
+    
+    location = forms.ModelChoiceField(
+        queryset = Location.objects.all(),
+        required= False
+    )
+    
+    class Meta:
+        model = UserProfile
+        fields = ['bio', 'tags', 'location']
 
 
 #comment added

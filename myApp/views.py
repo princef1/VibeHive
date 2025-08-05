@@ -2,8 +2,8 @@ from django.shortcuts import redirect, render
 from myApp.forms import CustomAuthenticationForm, CustomUserCreationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-
-from myApp.models import ProfileMedia
+from .forms import UserSetupProfile
+from myApp.models import ProfileMedia, UserProfile
 # Create your views here.
 
 def landingpage(request):
@@ -50,6 +50,33 @@ def user_logout(request):
 
 def firstpage(request):
     return render(request,'firstpage.html')
+
+def feed(request):
+    return render(request,'feed.html')
+
+
+def setup_profile(request):
+    user = request.user
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        form = UserSetupProfile(request.POST, instance=profile)
+        media_files = request.FILES.getlist('media')
+
+        if form.is_valid():
+            form.save()
+                # To handle media uplaod (upto 5 files total)
+            existing_count = ProfileMedia.objects.filter(user=user).count()
+            upload_count = min(5 - existing_count, len(media_files))
+
+            for media in media_files[:upload_count]:
+                ProfileMedia.objects.create(user=user, media=media)
+
+            return redirect('feed')
+    else:
+        form = UserSetupProfile(instance=profile)
+    return render(request, 'setup_profile.html', {'form':form})
+
 
 from django.db.models.signals import post_delete,pre_save
 from django.dispatch import receiver

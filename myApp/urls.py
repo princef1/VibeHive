@@ -10,4 +10,7 @@ urlpatterns =   [
     path('logout/',views.user_logout, name = 'logout'),
     path('firstpage/',views.firstpage, name = 'firstpage'),
     path('card/', views.card_page, name='card_page'),
+    path('setup_profile/',views.setup_profile, name = 'setupprofile'),
+    path('feed/',views.feed, name = 'feed'),
+
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
