@@ -10,6 +10,13 @@ class Tag(models.Model):
     
     def __str__(self):
         return f"{self.emoji} {self.tagname}"
+    
+class Location(models.Model):
+    location_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.location_name
+
 
 from django.contrib.auth.models import BaseUserManager,AbstractBaseUser,PermissionsMixin  
 class CustomUserManager(BaseUserManager):
@@ -68,6 +75,18 @@ class ProfileMedia(models.Model):
         return  f'👤{instance.user.user_name}/{filename}'
 
     media = models.FileField(upload_to=user_dir_path, validators=[validate_image_or_video])
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='profile')
+    bio = models.TextField(max_length = 120, blank = True)
+    tags = models.ManyToManyField(Tag, blank = True)
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, blank = True,null = True)
+
+    def __str__(self):
+        return f"{self.user.user_name}'s Profile"
+
+
 
 
 
