@@ -1,46 +1,55 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VibeHive</title>
-    <link rel="icon" href="{% static 'images/Vibe.png' %}" type="image/png">
+    <link rel="icon" href="{% static 'images/Vibe.png' %}" type="image/png" />
 
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+  </head>
 
-</head>
-
-<body>
-
+  <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <img src="{% static 'images/Vibe.png' %}" alt="VibeHive Logo">
-        <a href="{% url 'login' %}">Login</a>
+      <div class="logo">
+        <img src="{% static 'images/Vibe.png' %}" alt="VibeHive Logo" />
+        <span>VibeHibe</span>
+      </div>
+      <a href="{% url 'login' %}">Login</a>
     </nav>
 
     <!-- Main Section -->
     <div class="main-content">
-        <h2>Your go-to platform for finding your people, sharing and exploring creative vibes, ideas.</h2>
-        <div class="signup-button">
-            <a href="{% url 'signup' %}" style="background-color: black; padding: 6px; color:white; border-radius: 10px;">Create Account</a>
-        </div>
+      <div class="theme-toggle">
+        <button class="theme-light-button">Light</button>
+        <button class="theme-dark-button">Dark</button>
+      </div>
+      <div class="welcome-message">
+        <span class="quote">Where your vibe meets its match.</span>
+        <button class="signup-button">
+          <a href="{% url 'signup' %}">Create Account</a>
+        </button>
+      </div>
     </div>
 
     <!-- Footer -->
     <footer>
-        <div class="info">
-            <div class="store">
-                <p>Get the App</p>
-                <img src="{% static 'images/app_store.png' %}" alt="App Store">
-                <img src="{% static 'images/play_store.png' %}" alt="Play Store">
-            </div>
-            <p>Contact us: <a href="mailto:support@vibehive.com">support@vibehive.com</a></p>
+      <div class="info">
+        <div class="store">
+          <p>Get the App</p>
+          <img src="{% static 'images/app_store.png' %}" alt="App Store" />
+          <img src="{% static 'images/play_store.png' %}" alt="Play Store" />
         </div>
-        <p>&copy; {{ current_year|default:2025 }} VibeHive. All rights reserved.</p>
+        <p>
+          Contact us:
+          <a href="mailto:support@vibehive.com">support@vibehive.com</a>
+        </p>
+      </div>
+      <p>
+        &copy; {{ current_year|default:2025 }} VibeHive. All rights reserved.
+      </p>
     </footer>
-
-</body>
-
+  </body>
 </html>
