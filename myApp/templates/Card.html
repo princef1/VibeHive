@@ -6,11 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link rel="stylesheet" href="{% static 'css/card.css' %}" />
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
   </head>
   <body>
-    <div class="card-container" id="card-container"></div>
+    <nav class="navbar navbar-cardpage">
+      <div class="logo">
+        <img src="{% static 'images/Vibe.png' %}" alt="VibeHive Logo" />
+        <span>VibeHibe</span>
+      </div>
+      <i class="fas fa-user-friends message-icon"></i>
 
+      <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i
+        ><input type="text" placeholder=" Username" class="search-input" />
+      </div>
+      <div class="nav-icons">
+        <i class="far fa-comment message-icon"></i>
+        <i class="far fa-user message-icon"></i>
+      </div>
+    </nav>
+    <div class="main-content">
+      <div class="swipe-wrapper">
+        <div class="card-container" id="card-container"></div>
+      </div>
+      <div class="button-container">
+        <button class="dislike-button">👎 Dislike</button>
+        <button class="undo-button">↩️ Undo</button>
+        <button class="like-button">❤️ Like</button>
+      </div>
+    </div>
     <script src="{% static 'js/card.js' %}"></script>
   </body>
 </html>

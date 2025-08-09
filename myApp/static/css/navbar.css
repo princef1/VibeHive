@@ -1,0 +1,107 @@
+@import url("https://fonts.googleapis.com/css2?family=Fugaz+One&family=Sriracha&display=swap");
+
+/* Navbar */
+.navbar {
+  display: flex;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+}
+.navbar-landingpage {
+  justify-content: space-between;
+  padding: 10px 30px;
+}
+.navbar-cardpage {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding-top: 5px;
+  right: 50px;
+}
+.navbar-cardpage .nav-icons {
+  display: flex;
+  gap: 20px;
+}
+
+.navbar img {
+  height: 30px;
+  filter: grayscale(100%);
+  transition: filter 0.3s ease;
+}
+
+.navbar img:hover {
+  filter: grayscale(0%);
+}
+
+.navbar a {
+  text-decoration: none;
+  color: white;
+  background-color: #28a745;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: background 0.3s ease;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  background-color: #218838;
+}
+
+.navbar .logo {
+  cursor: pointer;
+  margin-left: 10px;
+  background-color: #ffffff7f;
+  /* background-color: #ffffffff; */
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 10px;
+  padding: 5px 10px;
+  border-radius: 10px;
+}
+.navbar span {
+  font-family: "Fugaz One", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 24px;
+}
+.search-bar {
+  width: 450px;
+  height: 33px;
+  display: flex;
+  align-items: center;
+  background-color: #ffffff7f; /* semi-transparent white */
+  border-radius: 20px;
+  padding: 0 10px;
+  /* justify-content: center;  */
+  gap: 8px; /* space between icon and text */
+  color: white; /* makes font awesome icon white */
+}
+
+.search-bar i {
+  font-size: 16px; /* match text size */
+}
+
+.search-bar input {
+width: 100%;
+  border: none;
+  background: transparent;
+  color: white;
+  font-size: 16px;
+  outline: none;
+  padding: 0;
+}
+
+.search-bar input::placeholder {
+  color: white;
+}
+
+.message-icon {
+  position: relative;
+  /* right: 30px; */
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}

@@ -8,18 +8,20 @@
     <link rel="icon" href="{% static 'images/Vibe.png' %}" type="image/png" />
 
     <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
+
   </head>
 
   <body>
     <!-- Navbar -->
-    <nav class="navbar">
+    <nav class="navbar navbar-landingpage">
       <div class="logo">
         <img src="{% static 'images/Vibe.png' %}" alt="VibeHive Logo" />
         <span>VibeHibe</span>
       </div>
       <a href="{% url 'login' %}">Login</a>
     </nav>
-
+<div class=""></div>
     <!-- Main Section -->
     <div class="main-content">
       <div class="theme-toggle">

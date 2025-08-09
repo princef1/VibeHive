@@ -40,7 +40,7 @@ def user_login(request):
     return render(request, 'login.html', {'form':form})
 
 def card_page(request):
-    return render(request, 'card.html')
+    return render(request, 'Card.html')
 
 @login_required
 def user_logout(request):

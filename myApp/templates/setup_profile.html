@@ -1,103 +1,118 @@
-{% load static %}
-{% load form_extras %}
+{% load static %} {% load form_extras %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Setup Profile</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-        body {
-            font-family: sans-serif;
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            background-color: #c7e5f4;
-        }
+      body {
+        font-family: sans-serif;
+        margin: auto;
+        padding: 20px;
+        width: 100%;
+        background-color: #c7e5f4;
+      }
+      .main-content {
+        display: flex;
+        flex-direction: column;
+        max-width: 600px;
+      }
+      h2 {
+        text-align: center;
+      }
 
-        h2 {
-            text-align: center;
-        }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+      textarea,
+      select,
+      input[type="text"],
+      input[type="email"],
+      input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+      }
 
-        textarea, select, input[type="text"], input[type="email"], input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            font-size: 1rem;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
+      .tag-checkboxes label {
+        display: inline-block;
+        background-color: #f0f0f0;
+        border-radius: 20px;
+        padding: 6px 12px;
+        margin: 5px;
+        cursor: pointer;
+      }
 
-        .tag-checkboxes label {
-            display: inline-block;
-            background-color: #f0f0f0;
-            border-radius: 20px;
-            padding: 6px 12px;
-            margin: 5px;
-            cursor: pointer;
-        }
+      .tag-checkboxes input {
+        display: none;
+      }
 
-        .tag-checkboxes input {
-            display: none;
-        }
+      .tag-checkboxes input:checked + label {
+        background-color: #007bff;
+        color: white;
+      }
 
-        .tag-checkboxes input:checked + label {
-            background-color: #007bff;
-            color: white;
-        }
+      .media-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
 
-        .media-preview {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+      .media-preview-item {
+        position: relative;
+      }
 
-        .media-preview-item {
-            position: relative;
-        }
+      .media-preview-item img,
+      .media-preview-item video {
+        max-width: 100px;
+        max-height: 100px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
 
-        .media-preview-item img,
-        .media-preview-item video {
-            max-width: 100px;
-            max-height: 100px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
+      .remove-btn {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        font-size: 12px;
+      }
 
-        .remove-btn {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: red;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        button {
-            padding: 10px;
-            font-size: 1rem;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-        }
+      button {
+        padding: 10px;
+        font-size: 1rem;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+      }
     </style>
-</head>
-<body>
-    <h2>Setup Your Profile</h2>
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="{% static 'images/Vibe.png' %}" alt="VibeHive Logo" />
+        <span>VibeHibe</span>
+      </div>
+    </nav>
+    <div class="main-content">
+      <h2>Setup Your Profile</h2>
 
-    <form method="POST" enctype="multipart/form-data">
+      <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
 
         <!-- Bio -->
@@ -106,12 +121,24 @@
 
         <!-- Tags -->
         <div class="tag-checkboxes">
-            <p>Select Tags:</p>
-            {% for tag in form.tags.field.queryset %}
-                <input type="checkbox" name="tags" id="tag{{ tag.id }}" value="{{ tag.id }}"
-                    {% if tag in form.initial.tags %}checked{% endif %}>
-                <label for="tag{{ tag.id }}">{{ tag.emoji }} {{ tag.tagname }}</label>
-            {% endfor %}
+          <p>Select Tags:</p>
+          {% for tag in form.tags.field.queryset %}
+          <input
+            type="checkbox"
+            name="tags"
+            id="tag{{ tag.id }}"
+            value="{{ tag.id }}"
+            {%
+            if
+            tag
+            in
+            form.initial.tags
+            %}checked{%
+            endif
+            %}
+          />
+          <label for="tag{{ tag.id }}">{{ tag.emoji }} {{ tag.tagname }}</label>
+          {% endfor %}
         </div>
 
         <!-- Location -->
@@ -120,84 +147,94 @@
 
         <!-- Media Upload -->
         <label for="media">Upload Media (max 5)</label>
-        <input type="file" id="media" name="media" accept="image/*,video/*" multiple>
+        <input
+          type="file"
+          id="media"
+          name="media"
+          accept="image/*,video/*"
+          multiple
+        />
 
         <!-- Preview Selected Media -->
         <div class="media-preview" id="media-preview"></div>
 
         <button type="submit">Save Profile</button>
-    </form>
-
+      </form>
+    </div>
     <script>
-        const mediaInput = document.getElementById("media");
-        const previewContainer = document.getElementById("media-preview");
+      const mediaInput = document.getElementById("media");
+      const previewContainer = document.getElementById("media-preview");
 
-        mediaInput.addEventListener("change", handleFileSelect);
+      mediaInput.addEventListener("change", handleFileSelect);
 
-        function handleFileSelect(event) {
-            const files = Array.from(event.target.files);
-            const currentFiles = getCurrentPreviewFiles();
+      function handleFileSelect(event) {
+        const files = Array.from(event.target.files);
+        const currentFiles = getCurrentPreviewFiles();
 
-            const total = currentFiles.length + files.length;
-            if (total > 5) {
-                alert("You can only upload up to 5 media files.");
-                return;
-            }
-
-            files.forEach(file => {
-                addFileToPreview(file);
-            });
-
-            updateInputFiles();
+        const total = currentFiles.length + files.length;
+        if (total > 5) {
+          alert("You can only upload up to 5 media files.");
+          return;
         }
 
-        function getCurrentPreviewFiles() {
-            return Array.from(previewContainer.querySelectorAll(".preview-item")).map(div => div.fileRef);
+        files.forEach((file) => {
+          addFileToPreview(file);
+        });
+
+        updateInputFiles();
+      }
+
+      function getCurrentPreviewFiles() {
+        return Array.from(
+          previewContainer.querySelectorAll(".preview-item")
+        ).map((div) => div.fileRef);
+      }
+
+      function addFileToPreview(file) {
+        const previewDiv = document.createElement("div");
+        previewDiv.className = "preview-item";
+        previewDiv.fileRef = file;
+        previewDiv.style.display = "inline-block";
+        previewDiv.style.marginRight = "10px";
+        previewDiv.style.position = "relative";
+
+        const closeBtn = document.createElement("span");
+        closeBtn.textContent = "❌";
+        closeBtn.style.position = "absolute";
+        closeBtn.style.top = "-8px";
+        closeBtn.style.right = "-6px";
+        closeBtn.style.cursor = "pointer";
+        closeBtn.style.fontSize = "16px";
+        closeBtn.addEventListener("click", () => {
+          previewDiv.remove();
+          updateInputFiles();
+        });
+
+        if (file.type.startsWith("image")) {
+          const img = document.createElement("img");
+          img.src = URL.createObjectURL(file);
+          img.style.width = "120px";
+          img.style.borderRadius = "8px";
+          previewDiv.appendChild(img);
+        } else if (file.type.startsWith("video")) {
+          const video = document.createElement("video");
+          video.src = URL.createObjectURL(file);
+          video.controls = true;
+          video.style.width = "160px";
+          previewDiv.appendChild(video);
         }
 
-        function addFileToPreview(file) {
-            const previewDiv = document.createElement("div");
-            previewDiv.className = "preview-item";
-            previewDiv.fileRef = file;
-            previewDiv.style.display = "inline-block";
-            previewDiv.style.marginRight = "10px";
-            previewDiv.style.position = "relative";
+        previewDiv.appendChild(closeBtn);
+        previewContainer.appendChild(previewDiv);
+      }
 
-            const closeBtn = document.createElement("span");
-            closeBtn.textContent = "❌";
-            closeBtn.style.position = "absolute";
-            closeBtn.style.top = "-8px";
-            closeBtn.style.right = "-6px";
-            closeBtn.style.cursor = "pointer";
-            closeBtn.style.fontSize = "16px";
-            closeBtn.addEventListener("click", () => {
-                previewDiv.remove();
-                updateInputFiles();
-            });
-
-            if (file.type.startsWith("image")) {
-                const img = document.createElement("img");
-                img.src = URL.createObjectURL(file);
-                img.style.width = "120px";
-                img.style.borderRadius = "8px";
-                previewDiv.appendChild(img);
-            } else if (file.type.startsWith("video")) {
-                const video = document.createElement("video");
-                video.src = URL.createObjectURL(file);
-                video.controls = true;
-                video.style.width = "160px";
-                previewDiv.appendChild(video);
-            }
-
-            previewDiv.appendChild(closeBtn);
-            previewContainer.appendChild(previewDiv);
-        }
-
-        function updateInputFiles() {
-            const dataTransfer = new DataTransfer();
-            getCurrentPreviewFiles().forEach(file => dataTransfer.items.add(file));
-            mediaInput.files = dataTransfer.files;
-        }
+      function updateInputFiles() {
+        const dataTransfer = new DataTransfer();
+        getCurrentPreviewFiles().forEach((file) =>
+          dataTransfer.items.add(file)
+        );
+        mediaInput.files = dataTransfer.files;
+      }
     </script>
-</body>
+  </body>
 </html>
