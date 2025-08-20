@@ -223,6 +223,14 @@ form input:focus {
     display: none;
 }
 
+.pfp {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+
 /* Account & links */
 .account {
     margin-top: 8px;
@@ -332,6 +340,8 @@ footer a {
 footer a:hover {
     text-decoration: underline;
 }
+
+
 
 /* Responsive */
 @media (max-width: 768px) {
