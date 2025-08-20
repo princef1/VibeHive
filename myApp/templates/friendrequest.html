@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>{{ request.user.first_name }}'s Feed</title>
+  <title>Friend Requests</title>
   <link rel="icon" href="{% static 'images/Vibe.png' %}" type="image/png" />
   <style>
     body {
@@ -60,46 +60,6 @@
       background-color: #d32f2f;
     }
 
-    .search-container {
-      position: relative;
-      transition: all 0.3s ease;
-    }
-
-    #searchForm {
-      display: flex;
-      align-items: center;
-    }
-
-    #searchInput {
-      width: 0;
-      opacity: 0;
-      padding: 10px 14px;
-      /* bigger padding for height */
-      font-size: 1.1rem;
-      /* bigger font size */
-      border: 1.5px solid #ccc;
-      /* slightly thicker border */
-      border-radius: 24px;
-      /* a bit more rounded */
-      outline: none;
-      transition: width 0.3s ease, opacity 0.3s ease;
-      margin-right: 10px;
-    }
-
-    .search-container.active #searchInput {
-      width: 280px;
-      /* longer width */
-      opacity: 1;
-    }
-
-
-    .search-icon {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-    }
-
 
     h1 {
       text-align: center;
@@ -129,27 +89,11 @@
     @keyframes fadeOutToast { to { opacity: 0; transform: translateY(-20px);} }
 
     .requests-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;              /* ✅ adds spacing between cards */
-    margin-top: 20px;       /* ✅ spacing from the header */
-    justify-content: center;
-  }
-
-  .request-card {
-    width: 260px;           /* optional: consistent card size */
-    margin-bottom: 20px;    /* extra vertical spacing if wrapped */
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 15px;
-    background: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
-  }
-
-  .request-card:hover {
-    transform: translateY(-5px);
-  }
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
 
     .profile-card {
       background: #fff;
@@ -223,6 +167,29 @@
       background: #e53935;
     }
 
+    .fade-out {
+      animation: fadeOut 0.5s forwards;
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      to {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .profile-card {
+        width: 90%;
+      }
+    }
+
+    /* Toast Notification */
     .toast-container {
       position: fixed;
       top: 20px;
@@ -262,28 +229,15 @@
 
   <nav class="navbar">
     <div class="navbar-left">
-      <div class="logo"><img src="{% static 'images/Vibe.png' %}" alt="logo" width="45" height="40"></div>
+      <a href="{% url 'feed' %}"><img src="{% static 'images/Vibe.png' %}" alt="logo" width="45px" height="40px"></a>
     </div>
     <div class="navbar-right">
-      <div class="search-container" id="searchContainer">
-        <form method="get" action="{% url 'search_user' %}" id="searchForm">
-          <input type="text" name="q" placeholder="Search username..." id="searchInput" />
-          <button type="button" id="searchToggle" class="search-icon">
-            <img src="{% static 'images/search-icon.png' %}" alt="Search" width="20" height="20">
-          </button>
-        </form>
-      </div>
       
       <div class="chat">
       <a href="{% url 'chat' %}"><img src="{% static 'images/chat.png' %}" alt="chat"
           width="32" height="30"></a>
       </div>
       
-      <div class="friendreqicon">
-      <a href="{% url 'friend_requests' %}"><img src="{% static 'images/add-user.png' %}" alt="friendrequests"
-          width="32" height="33"></a>
-      </div>
-
       <a href="{% url 'profile' request.user.user_name%}">
       {% if request.user.profile.profile_picture %}
       <img src="{{ request.user.profile.profile_picture.url }}" alt="{{ request.user.username }}"
@@ -295,14 +249,14 @@
       <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
         <button type="submit" class="btn logout-btn">Logout</button>
-      </form>
     </div>
   </nav>
 
-  <h1>Make Friends</h1>
+
+  <h1>Friend Requests</h1>
 
   <!-- ✅ Scoped Messages -->
-  {% if request.resolver_match.url_name == 'feed' %}
+  {% if request.resolver_match.url_name == 'friend_requests' %}
   <div class="toast-container">
     {% if messages %}
       {% for message in messages %}
@@ -313,57 +267,35 @@
   {% endif %}
 
   <div class="requests-container">
-    {% for user in users %}
+    {% if pending_requests %}
+    {% for req in pending_requests %}
     <div class="profile-card">
-      <a href="{% url 'profile' user.user_name%}">
-      {% if user.profile.profile_picture %}
-      <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.user_name }}">
+      <a href="{% url 'profile' req.sender.user_name%}">
+      {% if req.sender.profile.profile_picture %}
+      <img src="{{ req.sender.profile.profile_picture.url }}" alt="{{ req.sender.user_name }}">
       {% else %}
-      <img src="{% static 'images/default-avatar.png' %}" alt="Default">
+      <img src="{% static 'images/default_profile.png' %}" alt="{{ req.sender.user_name }}">
       {% endif %}
       </a>
-      <div class="profile-name">{{ user.full_name }}</div>
-      <div class="profile-bio">{{ user.profile.bio|default:"No bio yet." }}</div>
-      <div class="button-group">
-        <form method="post" action="{% url 'send_friend_request' user.user_name %}">
 
-          {% csrf_token %}
-          <button type="submit" class="btn accept">Add Friend</button>
-        </form>
-        <a href="{% url 'next_user' user.user_name %}" class="btn decline">Next</a>
+      <div class="profile-name">{{ req.sender.user_name }}</div>
+
+      {% if req.sender.profile.bio %}
+      <div class="profile-bio">{{ req.sender.profile.bio }}</div>
+      {% else %}
+      <div class="profile-bio">No bio available.</div>
+      {% endif %}
+
+      <div class="button-group">
+        <a href="{% url 'respond_friend_request' req.id 'accept' %}" class="btn accept">Add</a>
+        <a href="{% url 'respond_friend_request' req.id 'reject' %}" class="btn decline">X</a>
       </div>
     </div>
-    {% empty %}
-    <p>No more users to show.</p>
     {% endfor %}
+    {% else %}
+    <p>No pending friend requests.</p>
+    {% endif %}
   </div>
-  <script>
-    const searchToggle = document.getElementById("searchToggle");
-    const searchContainer = document.getElementById("searchContainer");
-    const searchInput = document.getElementById("searchInput");
-
-    let isExpanded = false;
-
-    searchToggle.addEventListener("click", function () {
-      isExpanded = !isExpanded;
-      searchContainer.classList.toggle("active");
-
-      if (isExpanded) {
-        searchInput.focus();
-      } else {
-        searchInput.value = "";
-      }
-    });
-
-    searchInput.addEventListener("blur", () => {
-      // Optional: collapse when user clicks outside
-      setTimeout(() => {
-        searchContainer.classList.remove("active");
-        searchInput.value = "";
-        isExpanded = false;
-      }, 150);
-    });
-  </script>
 
 </body>
 

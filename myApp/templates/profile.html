@@ -1,0 +1,335 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.user_name }}'s Profile</title>
+    <link rel="icon" href="{% static 'images/Vibe.png' %}" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@heroicons/react/outline"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-left .logo {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-profile-pic {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #4CAF50;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        /* < !-- Animations for toast messages--> */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-down {
+            animation: fadeInDown 0.5s ease-out;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-b from-blue-100 via-white to-blue-50 min-h-screen flex flex-col">
+    <!-- ✅ Scoped Messages -->
+    {% if request.resolver_match.url_name == 'profile' %}
+    <div id="messages-container" class="fixed top-5 right-5 z-50 space-y-3">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="px-4 py-3 rounded-lg shadow-md text-white
+                  {% if message.tags == 'success' %} bg-green-500
+                  {% elif message.tags == 'error' %} bg-red-500
+                  {% elif message.tags == 'warning' %} bg-yellow-500
+                  {% else %} bg-blue-500 {% endif %}
+                  animate-fade-in-down">
+            <p class="text-sm font-medium">{{ message }}</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="logo"><a href="{% url 'feed' %}"><img src="{% static 'images/Vibe.png' %}" alt="logo" width="45"
+                        height="40"></a></div>
+        </div>
+        <div class="navbar-right">
+            <div class="chat">
+                <a href="{% url 'chat' %}"><img src="{% static 'images/chat.png' %}" alt="chat" width="32"
+                        height="30"></a>
+            </div>
+
+            <div class="friendreqicon">
+                <a href="{% url 'friend_requests' %}"><img src="{% static 'images/add-user.png' %}" alt="friendrequests"
+                        width="32" height="33"></a>
+            </div>
+            <a href="{% url 'profile' request.user.user_name%}">
+                {% if request.user.profile.profile_picture %}
+                <img src="{{ request.user.profile.profile_picture.url }}" alt="{{ request.user.username }}"
+                    class="nav-profile-pic">
+                {% else %}
+                <img src="{% static 'images/default-avatar.png' %}" alt="Default" class="nav-profile-pic">
+                {% endif %}
+            </a>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn logout-btn">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Profile Section -->
+    <section class="flex flex-col items-center mt-8 px-4">
+        <!-- Profile Image -->
+        <div class="relative w-40 h-40">
+            {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.user_name }}"
+                class="w-40 h-40 rounded-full object-cover border-4 border-white shadow-lg hover:scale-105 transition-transform duration-300">
+            {% else %}
+            <img src="{% static 'images/default_pfp.png' %}" alt="{{ user.user_name }}"
+                class="w-40 h-40 rounded-full object-cover border-4 border-white shadow-lg hover:scale-105 transition-transform duration-300">
+            {% endif %}
+        </div>
+
+        <!-- Username -->
+        <p class="mt-2 text-sm text-gray-600">@{{ user.user_name }}</p>
+
+        <!-- Fullname with Edit and Add Friend Icons -->
+        <div class="relative flex justify-center mt-1 items-center">
+            <!-- Edit Icon (only for profile owner) -->
+            {% if request.user == user %}
+            <a href="{% url 'edit_profile' %}" title="Edit Profile"
+                class="absolute top-1.5 left-[-40px] text-gray-600 hover:text-gray-800 transition text-base">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </a>
+            {% endif %}
+
+            <!-- Full Name (always centered) -->
+            <h2 class="text-3xl font-bold text-gray-800 text-center">{{ user.full_name }}</h2>
+
+            <!-- Add Friend Icon (only if viewing someone else's profile) -->
+            <!-- Friends Icon -->
+            {% if request.user != user %}
+            {% if is_friend %}
+            <!-- Friends Icon -->
+            <button onclick="openUnfriendModal()" title="Friends"
+                class="absolute top-1.5 right-[-40px] text-green-600 hover:text-green-800 transition text-base">
+                <i class="fa-solid fa-user-check"></i>
+            </button>
+
+            <!-- Unfriend Modal -->
+            <div id="unfriendModal"
+                class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white rounded-lg p-6 shadow-lg max-w-sm w-full text-center">
+                    <p class="text-lg font-semibold mb-4">
+                        Are you sure you want to unfriend {{ user.full_name }}?
+                    </p>
+                    <div class="flex justify-center gap-4">
+                        <a href="{% url 'unfriend' user.user_name %}"
+                            class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                            Yes
+                        </a>
+                        <button onclick="closeUnfriendModal()"
+                            class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">
+                            No
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {% elif sent_request %}
+            <!-- Sent Icon -->
+            <form method="post" action="{% url 'cancel_friend_request' user.user_name %}"
+                class="absolute top-1.5 right-[-40px]">
+                {% csrf_token %}
+                <button type="submit" title="Cancel Request"
+                    class="text-yellow-500 hover:text-yellow-700 transition text-base">
+                    <i class="fa-solid fa-user-clock"></i>
+                </button>
+            </form>
+
+            {% elif received_request %}
+
+            <!-- Accept Friend Request Button -->
+            {% if received_request_obj %}
+            <a href="{% url 'respond_friend_request' received_request_obj.id 'accept' %}"
+                class="absolute top-1.5 right-[-40px] inline-flex items-center justify-center rounded-full p-2 text-blue-500 hover:text-blue-700 transition"
+                title="Accept Friend Request">
+                <i class="fa-solid fa-user-plus"></i>
+            </a>
+            {% endif %}
+
+
+            {% else %}
+            <!-- Add Friend Icon -->
+            <form method="post" action="{% url 'send_friend_request' user.user_name %}"
+                class="absolute top-1.5 right-[-40px]">
+                {% csrf_token %}
+                <button type="submit" title="Add Friend" class="text-blue-600 hover:text-blue-800 transition text-base">
+                    <i class="fa-solid fa-user-plus"></i>
+                </button>
+            </form>
+            {% endif %}
+            {% endif %}
+        </div>
+
+
+        <!-- Friends Section -->
+        <div class="mt-4 flex flex-col items-center">
+            <!-- Friend Count -->
+            <p class="text-gray-600 text-sm mb-2">
+                {{ friend_count }} {{ friend_count|pluralize:"Friend,Friends" }}
+            </p>
+
+            <!-- Friend List Preview (up to 6 friends) -->
+            <div class="flex flex-wrap justify-center gap-2">
+                {% for friend in friend_list|slice:":6" %}
+                <a href="{% url 'profile' friend.user_name %}" title="{{ friend.user_name }}">
+                    {% if friend.profile.profile_picture %}
+                    <img src="{{ friend.profile.profile_picture.url }}" alt="{{ friend.user_name }}"
+                        class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md hover:scale-105 transition-transform duration-300">
+                    {% else %}
+                    <img src="{% static 'images/default-avatar.png' %}" alt="{{ friend.user_name }}"
+                        class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md hover:scale-105 transition-transform duration-300">
+                    {% endif %}
+                </a>
+                {% empty %}
+                <p class="text-gray-400 text-sm">No friends yet</p>
+                {% endfor %}
+            </div>
+
+            <!-- If more than 6 friends, show a "View All" link -->
+            {% if friend_count > 6 %}
+            <a href="{% url 'user_friend_list' user.user_name %}" class="text-blue-600 hover:underline mt-2 text-sm">
+                View All Friends
+            </a>
+            {% endif %}
+        </div>
+
+
+
+        <!-- Bio -->
+        <h3 class="mt-3 font-semibold text-gray-700">Bio:</h3>
+        <p class="mt-1 text-gray-600 text-sm italic">
+            {{ user.profile.bio|default:"No bio available." }}
+        </p>
+
+        <!-- Location -->
+        {% if user.profile.location %}
+        <h3 class="mt-4 font-semibold text-gray-700">Location:</h3>
+        <p class="text-gray-500 text-sm">📍 {{ user.profile.location }}</p>
+        {% endif %}
+    </section>
+
+    <!-- Tags -->
+    <section class="mt-6 px-4">
+        <h3 class="font-semibold text-gray-700 text-center mb-2">Tags Selected</h3>
+        <div class="flex flex-wrap justify-center gap-2">
+            {% for tag in user.profile.tags.all %}
+            <span
+                class="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full shadow-sm cursor-pointer hover:bg-blue-200 transition">
+                {{ tag.emoji }} {{ tag.tagname }}
+            </span>
+            {% empty %}
+            <span class="text-gray-400 text-sm">No tags yet</span>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Media -->
+    <section class="mt-8 px-4">
+        <h3 class="font-semibold text-gray-700 text-center mb-3">Medias Uploaded</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 justify-items-center">
+            {% for media in user.media.all %}
+            <div
+                class="w-[200px] h-[300px] overflow-hidden rounded-lg shadow-md border border-gray-200 hover:scale-105 transition-transform duration-300">
+                {% if media.is_video %}
+                <video controls class="w-full h-full object-cover">
+                    <source src="{{ media.media.url }}" type="{{ media.mime_type }}">
+                    Your browser does not support the video tag.
+                </video>
+                {% else %}
+                <img src="{{ media.media.url }}" alt="Profile media" class="w-full h-full object-cover">
+                {% endif %}
+            </div>
+            {% empty %}
+            <p class="text-gray-400 text-sm text-center col-span-full">No media uploaded yet.</p>
+            {% endfor %}
+        </div>
+    </section>
+    <script>
+        // Auto-hide profile messages
+        setTimeout(() => {
+            const messages = document.querySelectorAll('#messages-container > div');
+            messages.forEach((msg) => {
+                msg.classList.add('opacity-0', 'transition-opacity', 'duration-700');
+                setTimeout(() => msg.remove(), 700);
+            });
+        }, 4000);
+    </script>
+    <script>
+        function openUnfriendModal() {
+            document.getElementById('unfriendModal').classList.remove('hidden');
+        }
+        function closeUnfriendModal() {
+            document.getElementById('unfriendModal').classList.add('hidden');
+        }
+    </script>
+</body>
+
+</html>

@@ -2,6 +2,7 @@
 {% load form_extras %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Setup Profile</title>
@@ -25,7 +26,15 @@
             gap: 20px;
         }
 
-        textarea, select, input[type="text"], input[type="email"], input[type="file"] {
+        #profile-picture-preview img {
+            border: 2px solid #007bff;
+        }
+
+        textarea,
+        select,
+        input[type="text"],
+        input[type="email"],
+        input[type="file"] {
             width: 100%;
             padding: 10px;
             font-size: 1rem;
@@ -46,7 +55,7 @@
             display: none;
         }
 
-        .tag-checkboxes input:checked + label {
+        .tag-checkboxes input:checked+label {
             background-color: #007bff;
             color: white;
         }
@@ -92,14 +101,68 @@
             border-radius: 8px;
             cursor: pointer;
         }
+
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin: 1em 0;
+        }
+
+        .alert {
+            position: relative;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            background-color: #fef3c7;
+            /* light yellow */
+            color: #92400e;
+            /* dark amber */
+            border-color: #fde68a;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+
+        .alert .close-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #92400e;
+            font-weight: bold;
+        }
+
+        .alert.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
     </style>
 </head>
+
 <body>
-    <h2>Setup Your Profile</h2>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li class="alert">
+            {{ message }}
+            <button class="close-btn" onclick="this.parentElement.classList.add('fade-out')">&times;</button>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <p><a href="{% url 'logout' %}">Logout</a></p>
+    <h2>Welcome, {{ request.user.first_name }}<br>Setup Your Profile</h2>
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-
+        <!-- Profile Picture -->
+        <label for="id_profile_picture">Profile Picture</label>
+        <input type="file" name="profile_picture" id="id_profile_picture" accept="image/*">
+        <div id="profile-picture-preview" style="margin-top: 10px;"></div>
         <!-- Bio -->
         <label for="id_bio">Bio</label>
         {{ form.bio }}
@@ -108,10 +171,17 @@
         <div class="tag-checkboxes">
             <p>Select Tags:</p>
             {% for tag in form.tags.field.queryset %}
-                <input type="checkbox" name="tags" id="tag{{ tag.id }}" value="{{ tag.id }}"
-                    {% if tag in form.initial.tags %}checked{% endif %}>
-                <label for="tag{{ tag.id }}">{{ tag.emoji }} {{ tag.tagname }}</label>
+            {% if form.initial.tags and tag in form.initial.tags %}
+            <input type="checkbox" name="tags" id="tag{{ tag.id }}" value="{{ tag.id }}" checked>
+            {% else %}
+            <input type="checkbox" name="tags" id="tag{{ tag.id }}" value="{{ tag.id }}">
+            {% endif %}
+            <label for="tag{{ tag.id }}">{{ tag.emoji }} {{ tag.tagname }}</label>
             {% endfor %}
+
+
+
+
         </div>
 
         <!-- Location -->
@@ -119,7 +189,7 @@
         {{ form.location }}
 
         <!-- Media Upload -->
-        <label for="media">Upload Media (max 5)</label>
+        <label for="media">Upload Media (max 6 including Profile Picture)</label>
         <input type="file" id="media" name="media" accept="image/*,video/*" multiple>
 
         <!-- Preview Selected Media -->
@@ -129,6 +199,25 @@
     </form>
 
     <script>
+        const profilePicInput = document.getElementById("id_profile_picture");
+        const profilePicPreview = document.getElementById("profile-picture-preview");
+
+        profilePicInput.addEventListener("change", function () {
+            const file = this.files[0];
+            profilePicPreview.innerHTML = "";  // Clear previous
+
+            if (file && file.type.startsWith("image")) {
+                const img = document.createElement("img");
+                img.src = URL.createObjectURL(file);
+                img.style.width = "120px";
+                img.style.height = "120px";
+                img.style.borderRadius = "50%";
+                img.style.objectFit = "cover";
+                profilePicPreview.appendChild(img);
+            }
+        });
+
+
         const mediaInput = document.getElementById("media");
         const previewContainer = document.getElementById("media-preview");
 
@@ -140,7 +229,7 @@
 
             const total = currentFiles.length + files.length;
             if (total > 5) {
-                alert("You can only upload up to 5 media files.");
+                alert("You can only upload up to 6 media files including Profile Picture.");
                 return;
             }
 
@@ -200,4 +289,5 @@
         }
     </script>
 </body>
+
 </html>

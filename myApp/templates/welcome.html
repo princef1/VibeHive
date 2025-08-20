@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Welcome, {{ request.user.user_name }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="{% static 'images/Vibe.png' %}" type="image/png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-left .logo {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-profile-pic {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #4CAF50;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-b from-blue-100 via-white to-blue-50 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="logo"><img src="{% static 'images/Vibe.png' %}" alt="logo" width="45" height="40"></div>
+        </div>
+        <div class="navbar-right">
+            <a href="{% url 'feed' %}"><img src="{% static 'images/feed-icon.png' %}" alt="Feed" width="32"
+                    height="30"></a>
+            {% if request.user.profile.profile_picture %}
+            <img src="{{ request.user.profile.profile_picture.url }}" alt="{{ request.user.username }}"
+                class="nav-profile-pic">
+            {% else %}
+            <img src="{% static 'images/default-avatar.png' %}" alt="Default" class="nav-profile-pic">
+            {% endif %}
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn logout-btn">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Profile Section -->
+    <main class="flex flex-col items-center mt-12 px-6 flex-grow">
+
+        <!-- Profile Picture -->
+        <div
+            class="w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white hover:scale-105 transition-transform duration-300">
+            <a href="{% url 'userdetail' user.user_name%}">
+                {% if request.user.profile.profile_picture %}
+                <img src="{{ request.user.profile.profile_picture.url }}" alt="Profile Picture"
+                    class="w-full h-full object-cover" />
+                {% else %}
+                <img src="{% static 'images/default_pfp.png' %}" alt="Default Profile Picture"
+                    class="w-full h-full object-cover" />
+                {% endif %}
+            </a>
+        </div>
+
+        <!-- Welcome Text -->
+        <h1 class="mt-6 text-3xl font-bold text-gray-800 text-center">
+            Welcome to the Feed, {{ request.user.first_name }}
+        </h1>
+        <p class="mt-2 text-gray-600 text-center italic max-w-md">
+            Find <em>your</em> people, Find <em>your</em> vibe :)
+        </p>
+
+        <!-- Media Gallery -->
+        <section class="mt-12 w-full max-w-4xl">
+            <h2 class="text-xl font-semibold text-gray-700 mb-6 text-center">Your Uploaded Media</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                {% for media in request.user.media.all %}
+                <div
+                    class="w-full aspect-[2/3] rounded-lg overflow-hidden shadow-md border border-gray-200 hover:scale-105 transition-transform duration-300">
+
+                    {% if media.is_video %}
+                    <video controls class="w-full h-full object-cover">
+                        <source src="{{ media.media.url }}" type="{{ media.mime_type }}">
+                    </video>
+                    {% elif media.is_image %}
+                    <img src="{{ media.media.url }}" alt="Profile media" class="w-full h-full object-cover" />
+                    {% endif %}
+
+                </div>
+                {% empty %}
+                <p class="text-gray-400 text-center col-span-full">No media uploaded yet.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white shadow-inner py-6 mt-auto text-center text-gray-600 text-sm">
+        <div class="mb-4">
+            <p>Get the App</p>
+            <div class="flex justify-center gap-4 mt-2">
+                <img src="{% static 'images/app_store.png' %}" alt="App Store" class="h-10" />
+                <img src="{% static 'images/play_store.png' %}" alt="Play Store" class="h-10" />
+            </div>
+        </div>
+        <p>
+            Contact us: <a href="mailto:support@vibehive.com"
+                class="text-blue-600 hover:underline">support@vibehive.com</a>
+        </p>
+        <p class="mt-2">&copy; {{ current_year|default:2025 }} VibeHive. All rights reserved.</p>
+    </footer>
+
+</body>
+
+</html>
