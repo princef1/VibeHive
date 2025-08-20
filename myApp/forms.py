@@ -54,7 +54,7 @@ class UserSetupProfile(forms.ModelForm):
     
     class Meta:
         model = UserProfile
-        fields = ['bio', 'tags', 'location']
+        fields = ['profile_picture', 'bio', 'tags', 'location']
 
 
 #comment added
